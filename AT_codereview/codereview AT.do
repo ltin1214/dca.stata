@@ -101,7 +101,7 @@ stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} //savin
 	//Add in intervention:
 	stset ttcancer, f(cancer)
 	tempfile km
-	stdca pr_failure18, inter /*interventionper(100)*/ timepoint(1.5) xstop(.5)  //saving(`km') 
+	stdca pr_failure18, inter interventionper(100) timepoint(1.5) xstop(.5) ytitle("Net reduction in interventions" "per 100 patients" " ") //saving(`km') 
 	//Weird spacing for the y-title. 
 	
 	
