@@ -53,12 +53,12 @@ dca cancer marker, prob(no) xstart(0.05) xstop(0.35) xby(0.05) //saving("DCA mar
 
 /*Interventions Avoided*/
 dca cancer marker, prob(no) inter /*interventionper(100)*/  xstart(0.05) xstop(0.35) xlabel(0.05(0.05)0.35) //${format} ylabel(,format("%9.0f")) saving("intervention", replace)
-
+x
 *****************************
 *** Survival Outcomes DCA ***
 *****************************
 /*Do File for "stdca" command*/	
-	run "O:\Outcomes\Andrew\Methodology Work\Vickers stdca function updates\Stata\stdca.do"
+	run "C:\Users\tinl\Documents\GitHub\dca.stata\stdca.ado"
 
 /*Format for graphs to make it a bit clearer*/
 	global format=`"legend(size(small) cols(1) textwidth(100)) scheme(s1color) ylabel(, format("%9.2f")) xlabel(, format("%9.2f"))"'
@@ -79,7 +79,7 @@ dca cancer marker, prob(no) inter /*interventionper(100)*/  xstart(0.05) xstop(0
 	label var pr_failure18 "Probility of Failure at 18 months"
 
 /*Multivariable DCA*/
-	stdca pr_failure18, timepoint(1.5) xstop(.5) smooth ${format} saving("survival mult", replace)
+	stdca pr_failure18, timepoint(1.5) xstop(.5) smooth ${format} //saving("survival mult", replace)
 
 /*DCA with Competing Risks*/
 	*'Creating' status = cancercr	
@@ -89,19 +89,26 @@ dca cancer marker, prob(no) inter /*interventionper(100)*/  xstart(0.05) xstop(0
 	
 stset ttcancer, f(status=1)
 
-stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} saving("survival multi compete", replace)
+stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} //saving("survival multi compete", replace)
 
 /*Showing both (Kaplan Meier & Competing Risk) together on the same graph*/
 
 	* start with the standard Kaplan Meier model, saving the results to a temporary file
 	stset ttcancer, f(cancer)
 	tempfile km
-	stdca pr_failure18, timepoint(1.5) xstop(.5) nograph saving(`km')  
+	stdca pr_failure18, timepoint(1.5) xstop(.5) nograph //saving(`km')  
+
+	//Add in intervention:
+	stset ttcancer, f(cancer)
+	tempfile km
+	stdca pr_failure18, inter /*interventionper(100)*/ timepoint(1.5) xstop(.5)  //saving(`km') 
+	//Weird spacing for the y-title. 
+	
 	
 	* now do the competing risk model, again saving the results to a temporary file
 	stset ttcancer, f(status=1)
 	tempfile cr
-	stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) nograph saving(`cr') 
+	stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) nograph //saving(`cr') 
 	
 	* using the temp files, sort by threshold (for merging later) & rename all the models so that we can distinguish them *
 	use `km', clear
