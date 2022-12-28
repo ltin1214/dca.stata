@@ -49,10 +49,10 @@ local harm_conditional = r(mean)*`harm_marker'
 dca cancer high_risk joint conditional, harm(0 `harm_marker' `harm_conditional') xstop(0.35) xlabel(0(0.05)0.35) ${format}
 
 /*Saving out Net Benefit Values*/
-dca cancer marker, prob(no) xstart(0.05) xstop(0.35) xby(0.05) saving("DCA marker (dca).dta")
+dca cancer marker, prob(no) xstart(0.05) xstop(0.35) xby(0.05) //saving("DCA marker (dca).dta")
 
 /*Interventions Avoided*/
-dca cancer marker, prob(no) inter xstart(0.05) xstop(0.35) xby(0.05) xlabel(0.05(0.05)0.35) ${format} ylabel(,format("%9.0f")) saving("intervention", replace)
+dca cancer marker, prob(no) inter /*interventionper(100)*/  xstart(0.05) xstop(0.35) xlabel(0.05(0.05)0.35) //${format} ylabel(,format("%9.0f")) saving("intervention", replace)
 
 *****************************
 *** Survival Outcomes DCA ***
