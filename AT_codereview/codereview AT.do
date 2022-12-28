@@ -1,33 +1,3 @@
-use "O:\Outcomes\Andrew\Methodology Work\Vickers dca function updates\Example Dataset.dta", clear
-
-/*Changes to be made for initial load of datset*/ //Confirm with DAN!
-	/* Creating Risk Group (For Joint/Conditional Section)*/
-	gen risk_group = "intermediate"
-		replace risk_group = "high" if cancerpred > 0.5
-		replace risk_group = "low" if cancerpred < 0.1
-		label var risk_group "Patient Risk Group"
-	
-	/*Creating casecontrol variable (For Case Control Section)*/
-	sort patientid
-	gen casecontrol = .
-		replace casecontrol = 1 if cancer == 1
-		replace casecontrol = mod(_n,2)+1 if mi(casecontrol)
-		sort casecontrol cancer patientid
-		replace casecontrol = mod(_n, 64)+1 if (casecontrol ==1 & cancer == 0)
-		replace casecontrol = 0 if casecontrol == 2
-		replace casecontrol = 1 if casecontrol != 0 
-	label var casecontrol "Patient apart of case control study: 0=No, 1=Yes"
-	
-	/* Creating "Dead" variable (For Competing Risk Section) */
-	gen dead = cancercr == 2
-	label var dead "Died Prior to Possible Cancer Diagnosis"
-
-	/*Updating Dataset and Saving it*/
-	drop  cancerpred  conditionmarker cancercr
-	order patientid cancer dead ttcancer risk_group casecontrol age famhistory marker cancerpredmarker
-	sort patientid
-	save "O:\Outcomes\Andrew\Methodology Work\Vickers dca function updates\Example Dataset (Updated).dta", replace
-
 /*Do File for "dca2" command*/	
 	run "O:\Outcomes\Andrew\Methodology Work\Vickers dca function updates\Stata Code\dca.do"
 /*Format for graphs to make it a bit clearer*/
