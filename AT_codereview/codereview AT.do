@@ -1,5 +1,7 @@
-/*Do File for "dca" command*/	
-	run "O:\Outcomes\Andrew\Methodology Work\Vickers dca function updates\Stata Code\dca.do"
+
+/*Ado File for updated command*/	
+run "C:\Users\tinl\Documents\GitHub\dca.stata\dca.ado"
+
 /*Format for graphs to make it a bit clearer*/
 	global format=`"legend(size(small) cols(1) textwidth(100)) scheme(s1color) ylabel(, format("%9.2f")) xlabel(, format("%9.2f"))"'
 /*Using *Updated* dataset*/
@@ -213,5 +215,6 @@ stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} saving(
 
 	/*Creating the Graph*/
 	twoway (line all threshold if all>-0.05, sort) || (line none base full threshold, sort ${format} ytitle("Net Benefit"))
+
 
 
