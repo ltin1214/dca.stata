@@ -1,4 +1,4 @@
-/*Do File for "dca2" command*/	
+/*Do File for "dca" command*/	
 	run "O:\Outcomes\Andrew\Methodology Work\Vickers dca function updates\Stata Code\dca.do"
 /*Format for graphs to make it a bit clearer*/
 	global format=`"legend(size(small) cols(1) textwidth(100)) scheme(s1color) ylabel(, format("%9.2f")) xlabel(, format("%9.2f"))"'
@@ -11,8 +11,8 @@
 logit cancer famhistory
 printmodel, text
 
-dca2 cancer famhistory, ${format}
-dca2 cancer famhistory, xstop(0.35) xlabel(0(0.05)0.35) ${format} //limiting x-axis
+dca cancer famhistory, ${format}
+dca cancer famhistory, xstop(0.35) xlabel(0(0.05)0.35) ${format} //limiting x-axis
 
 ************************
 *** MULTIVARIATE DCA ***
@@ -21,13 +21,13 @@ dca2 cancer famhistory, xstop(0.35) xlabel(0(0.05)0.35) ${format} //limiting x-a
 /* Evaluation of New Model */
 logit cancer marker age famhistory
 // predict cancerpredmarker 	//variable already exists in dataset
-dca2 cancer cancerpredmarker famhistory, xstop(0.35) xlabel(0(0.05)0.35) ${format}
+dca cancer cancerpredmarker famhistory, xstop(0.35) xlabel(0(0.05)0.35) ${format}
 
 /* Evaluation of Published models */
 gen logodds_Brown =  0.75*(famhistory)+ 0.26*(age) - 17.5
 gen phat_Brown = invlogit(logodds_Brown)
 label var phat_Brown "Brown Model"
-dca2 cancer phat_Brown, xstop(0.35) ${format} xlabel(0(0.05)0.35)
+dca cancer phat_Brown, xstop(0.35) ${format} xlabel(0(0.05)0.35)
 
 /*Joint or Conditional Tests */
 gen high_risk = risk_group == "high"
@@ -37,25 +37,25 @@ label var joint "Treat via Joint Approach"
 gen conditional = risk_group == "high" | risk_group == "intermediate" & cancerpredmarker > .15
 label var conditional "Treat via Conditional Approach"
 
-dca2 cancer high_risk joint conditional, xstop(0.35) xlabel(0(0.05)0.35) ${format}
+dca cancer high_risk joint conditional, xstop(0.35) xlabel(0(0.05)0.35) ${format}
 
 /* Incorporating Harms into Model Assessment */
 local harm_marker = 0.0333
 gen intermediate_risk = risk_group =="intermediate"
 sum intermediate_risk
 local harm_conditional = r(mean)*`harm_marker'
-dca2 cancer high_risk joint conditional, harm(0 `harm_marker' `harm_conditional') xstop(0.35) xlabel(0(0.05)0.35) ${format}
+dca cancer high_risk joint conditional, harm(0 `harm_marker' `harm_conditional') xstop(0.35) xlabel(0(0.05)0.35) ${format}
 
 /*Saving out Net Benefit Values*/
-dca2 cancer marker, prob(no) xstart(0.05) xstop(0.35) xby(0.05) saving("DCA marker (dca2).dta")
+dca cancer marker, prob(no) xstart(0.05) xstop(0.35) xby(0.05) saving("DCA marker (dca).dta")
 
 /*Interventions Avoided*/
-dca2 cancer marker, prob(no) inter xstart(0.05) xstop(0.35) xby(0.05) xlabel(0.05(0.05)0.35) ${format} ylabel(,format("%9.0f")) saving("intervention", replace)
+dca cancer marker, prob(no) inter xstart(0.05) xstop(0.35) xby(0.05) xlabel(0.05(0.05)0.35) ${format} ylabel(,format("%9.0f")) saving("intervention", replace)
 
 *****************************
 *** Survival Outcomes DCA ***
 *****************************
-/*Do File for "stdca2" command*/	
+/*Do File for "stdca" command*/	
 	run "O:\Outcomes\Andrew\Methodology Work\Vickers stdca function updates\Stata\stdca.do"
 
 /*Format for graphs to make it a bit clearer*/
@@ -77,7 +77,7 @@ dca2 cancer marker, prob(no) inter xstart(0.05) xstop(0.35) xby(0.05) xlabel(0.0
 	label var pr_failure18 "Probility of Failure at 18 months"
 
 /*Multivariable DCA*/
-	stdca2 pr_failure18, timepoint(1.5) xstop(.5) smooth ${format} saving("survival mult", replace)
+	stdca pr_failure18, timepoint(1.5) xstop(.5) smooth ${format} saving("survival mult", replace)
 
 /*DCA with Competing Risks*/
 	*'Creating' status = cancercr	
@@ -87,19 +87,19 @@ dca2 cancer marker, prob(no) inter xstart(0.05) xstop(0.35) xby(0.05) xlabel(0.0
 	
 stset ttcancer, f(status=1)
 
-stdca2 pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} saving("survival multi compete", replace)
+stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} saving("survival multi compete", replace)
 
 /*Showing both (Kaplan Meier & Competing Risk) together on the same graph*/
 
 	* start with the standard Kaplan Meier model, saving the results to a temporary file
 	stset ttcancer, f(cancer)
 	tempfile km
-	stdca2 pr_failure18, timepoint(1.5) xstop(.5) nograph saving(`km')  
+	stdca pr_failure18, timepoint(1.5) xstop(.5) nograph saving(`km')  
 	
 	* now do the competing risk model, again saving the results to a temporary file
 	stset ttcancer, f(status=1)
 	tempfile cr
-	stdca2 pr_failure18, timepoint(1.5) compet1(2) xstop(.5) nograph saving(`cr') 
+	stdca pr_failure18, timepoint(1.5) compet1(2) xstop(.5) nograph saving(`cr') 
 	
 	* using the temp files, sort by threshold (for merging later) & rename all the models so that we can distinguish them *
 	use `km', clear
@@ -127,7 +127,7 @@ stdca2 pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} saving
 ************************
 *** Case Control DCA ***
 ************************
-/*Do File for "dca2" command*/	
+/*Do File for "dca" command*/	
 	run "O:\Outcomes\Andrew\Methodology Work\Vickers dca function updates\Stata Code\dca.do"
 /*Format for graphs to make it a bit clearer*/
 	global format=`"legend(size(small) cols(1) textwidth(100)) scheme(s1color) ylabel(, format("%9.2f")) xlabel(, format("%9.2f"))"'
@@ -145,12 +145,12 @@ stdca2 pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} saving
 	replace xb=xb+`Bayes'
 	
 	g phat=invlogit(xb)
-	dca2 phat phat, xstop(0.35) xlabel(0(0.05)0.35) ${format} 
+	dca phat phat, xstop(0.35) xlabel(0(0.05)0.35) ${format} 
 
 *********************************
 *** DCA Correction for Overfit***
 *********************************
-/*Do File for "dca2" command*/	
+/*Do File for "dca" command*/	
 	run "O:\Outcomes\Andrew\Methodology Work\Vickers dca function updates\Stata Code\dca.do"
 /*Format for graphs to make it a bit clearer*/
 	global format=`"legend(size(small) cols(1) textwidth(100)) scheme(s1color) ylabel(, format("%9.2f")) xlabel(, format("%9.2f"))"'
@@ -186,7 +186,7 @@ stdca2 pr_failure18, timepoint(1.5) compet1(2) xstop(.5) smooth ${format} saving
 		
 	/* Work out decision curve for data set created by Cross Validation */
 	tempfile dca`i'
-	quietly dca2 `event' `prediction1' `prediction2', nograph xstop(.5) saving("`dca`i''")
+	quietly dca `event' `prediction1' `prediction2', nograph xstop(.5) saving("`dca`i''")
 
 	drop u group `prediction1' `prediction2'
 }
